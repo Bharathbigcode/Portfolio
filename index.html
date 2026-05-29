@@ -1,621 +1,1077 @@
 <!DOCTYPE html>
-<html class="no-js" lang="en">
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BHARATH KALYAN // GAME DESIGNER</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet">
+<style>
+/* ── PALETTE ── */
+:root {
+  --black:   #0a0a0f;
+  --dark:    #12121a;
+  --panel:   #1a1a2e;
+  --yellow:  #ffe600;
+  --cyan:    #00f8f8;
+  --magenta: #ff2d78;
+  --green:   #39ff14;
+  --orange:  #ff8c00;
+  --white:   #f0f0f0;
+  --grey:    #555577;
+  --pixel: 4px;
+}
 
-    <!--- basic page needs
-    ================================================== -->
-    <meta charset="utf-8">
-    <title>Bharath</title>
-    <meta name="description" content="">
-    <meta name="author" content="">
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
-    <!-- mobile specific metas
-    ================================================== -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect x='0' y='0' width='8' height='8' fill='%23ffe600'/%3E%3Crect x='8' y='8' width='8' height='8' fill='%23ffe600'/%3E%3C/svg%3E") 4 4, auto;
+}
 
-    <!-- CSS
-    ================================================== -->
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/vendor.css">
+/* ── PIXEL BORDER MIXIN ── */
+.px-box {
+  border: var(--pixel) solid var(--yellow);
+  box-shadow: var(--pixel) var(--pixel) 0 var(--grey);
+  image-rendering: pixelated;
+}
+.px-box-cyan  { border-color: var(--cyan);    box-shadow: var(--pixel) var(--pixel) 0 #004444; }
+.px-box-mag   { border-color: var(--magenta); box-shadow: var(--pixel) var(--pixel) 0 #550022; }
+.px-box-green { border-color: var(--green);   box-shadow: var(--pixel) var(--pixel) 0 #0d4400; }
 
-    <!-- script
-    ================================================== -->
-    <script src="js/modernizr.js"></script>
+/* ── SCANLINES ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 9999;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px,
+    transparent 1px, transparent 3px
+  );
+}
 
-    <!-- favicons
-    ================================================== -->
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="manifest" href="site.webmanifest">
+/* ── CRT FLICKER ── */
+@keyframes flicker {
+  0%,100%{opacity:1} 92%{opacity:1} 93%{opacity:.92} 94%{opacity:1} 96%{opacity:.95} 97%{opacity:1}
+}
+body { animation: flicker 6s infinite; }
 
+/* ── MARQUEE TICKER ── */
+.ticker-wrap {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  background: var(--yellow); overflow: hidden; height: 28px;
+  border-bottom: var(--pixel) solid #aa9900;
+}
+.ticker {
+  display: inline-flex; gap: 0; white-space: nowrap;
+  animation: ticker 22s linear infinite;
+}
+@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.ticker span {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px; color: var(--black);
+  padding: 6px 28px; letter-spacing: 0.05em;
+}
+.ticker span.sep { color: var(--magenta); }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 28px; left: 0; right: 0; z-index: 100;
+  background: var(--dark);
+  border-bottom: var(--pixel) solid var(--yellow);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem; height: 52px;
+}
+.nav-logo {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px; color: var(--yellow);
+  text-decoration: none;
+  text-shadow: 2px 2px 0 #aa9900;
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-logo::before {
+  content: '▶'; color: var(--magenta); font-size: 12px;
+}
+nav ul { display: flex; gap: 0; list-style: none; height: 100%; }
+nav ul li a {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px; color: var(--grey);
+  text-decoration: none; letter-spacing: 0.05em;
+  display: flex; align-items: center; height: 100%;
+  padding: 0 1.2rem;
+  border-left: 2px solid transparent;
+  transition: color 0.1s, background 0.1s;
+}
+nav ul li a:hover {
+  color: var(--yellow); background: rgba(255,230,0,0.08);
+  border-left-color: var(--yellow);
+}
+.nav-insert {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px; color: var(--black);
+  background: var(--green); padding: 6px 10px;
+  border: 2px solid #1a7700;
+  box-shadow: 2px 2px 0 #0a3300;
+  text-decoration: none;
+  display: flex; align-items: center; gap: 6px;
+  transition: transform 0.1s;
+}
+.nav-insert:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 #0a3300; }
+.nav-insert::before { content: '★'; color: var(--black); }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh; padding: 130px 3rem 4rem;
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative; overflow: hidden;
+}
+
+/* pixel grid bg */
+#hero::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(255,230,0,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,230,0,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.hero-inner { position: relative; z-index: 1; max-width: 1100px; }
+
+/* INSERT COIN blinker */
+.insert-coin {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px; color: var(--yellow);
+  letter-spacing: 0.08em; margin-bottom: 2rem;
+  display: flex; align-items: center; gap: 10px;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.insert-coin::before { content: '🕹️'; animation: none; opacity: 1; }
+
+/* PLAYER SELECT */
+.player-select {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px; color: var(--cyan);
+  margin-bottom: 1rem; letter-spacing: 0.1em;
+}
+
+/* BIG NAME */
+.hero-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(1.6rem, 5vw, 3.2rem);
+  line-height: 1.3;
+  color: var(--white);
+  text-shadow:
+    4px 4px 0 var(--magenta),
+    8px 8px 0 rgba(255,45,120,0.3);
+  margin-bottom: 0.4rem;
+}
+.hero-name .name-2 {
+  color: var(--yellow);
+  text-shadow:
+    4px 4px 0 #aa7700,
+    8px 8px 0 rgba(170,119,0,0.3);
+  display: block;
+}
+
+.hero-class {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.55rem, 1.2vw, 0.75rem);
+  color: var(--green);
+  letter-spacing: 0.12em; margin: 1.5rem 0;
+  display: flex; align-items: center; gap: 12px;
+}
+.hero-class::before { content: 'CLASS:'; color: var(--grey); }
+
+/* HP / XP bars */
+.stat-bars {
+  display: flex; flex-direction: column; gap: 10px;
+  margin: 2rem 0; max-width: 380px;
+}
+.stat-row { display: flex; align-items: center; gap: 10px; }
+.stat-lbl {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px; color: var(--grey); width: 30px; flex-shrink: 0;
+}
+.bar-track {
+  flex: 1; height: 14px; background: #111;
+  border: 2px solid var(--grey); position: relative; overflow: hidden;
+  image-rendering: pixelated;
+}
+.bar-fill {
+  height: 100%; width: 0;
+  transition: width 1.4s steps(20, end);
+  image-rendering: pixelated;
+}
+.bar-fill.hp  { background: repeating-linear-gradient(90deg,var(--green) 0 8px,#1a7700 8px 10px); }
+.bar-fill.xp  { background: repeating-linear-gradient(90deg,var(--yellow) 0 8px,#8a7a00 8px 10px); }
+.bar-fill.mp  { background: repeating-linear-gradient(90deg,var(--cyan) 0 8px,#006a6a 8px 10px); }
+.bar-val {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px; color: var(--white); width: 52px; text-align: right; flex-shrink: 0;
+}
+
+.hero-btns { display: flex; gap: 1rem; margin-top: 2.5rem; flex-wrap: wrap; }
+
+/* PIXEL BUTTONS */
+.btn-8 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px; letter-spacing: 0.06em;
+  padding: 14px 20px; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 8px; cursor: pointer; border: none;
+  transition: transform 0.08s, box-shadow 0.08s;
+  image-rendering: pixelated;
+}
+.btn-8:active { transform: translate(2px,2px) !important; box-shadow: 0 0 0 !important; }
+.btn-start {
+  background: var(--yellow); color: var(--black);
+  border: var(--pixel) solid #aa9900;
+  box-shadow: 4px 4px 0 #665e00;
+}
+.btn-start:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #665e00; }
+.btn-p2 {
+  background: transparent; color: var(--cyan);
+  border: var(--pixel) solid var(--cyan);
+  box-shadow: 4px 4px 0 #003a3a;
+}
+.btn-p2:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #003a3a; }
+
+/* SCORE corner */
+.hero-score {
+  position: absolute; top: 120px; right: 3rem; z-index: 1;
+  text-align: right;
+}
+.score-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px; color: var(--grey); letter-spacing: 0.1em; margin-bottom: 4px;
+}
+.score-value {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 20px; color: var(--yellow);
+  text-shadow: 2px 2px 0 #7a6d00;
+}
+.score-item { margin-bottom: 1.5rem; }
+
+/* SPRITE */
+.sprite-area {
+  position: absolute; bottom: 3rem; right: 3rem; z-index: 1;
+  font-size: 64px; animation: float 2s ease-in-out infinite;
+  filter: drop-shadow(0 8px 0 rgba(0,0,0,0.5));
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+/* GROUND LINE */
+.ground { width:100%; height:4px; background:var(--yellow); margin-top:2rem; box-shadow:0 4px 0 #665e00; }
+
+/* ── SECTION WRAPPER ── */
+.section-wrap {
+  padding: 5rem 3rem;
+  max-width: 1200px; margin: 0 auto;
+}
+
+/* SECTION HEADER */
+.sec-header {
+  display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem;
+}
+.sec-num {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px; color: var(--black);
+  background: var(--magenta); padding: 6px 10px;
+  border: 2px solid #880030; box-shadow: 3px 3px 0 #440015;
+}
+.sec-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(0.8rem, 2vw, 1.1rem);
+  color: var(--yellow);
+  text-shadow: 3px 3px 0 #665e00;
+  letter-spacing: 0.05em;
+}
+.sec-line { flex: 1; height: 4px; background: repeating-linear-gradient(90deg,var(--yellow) 0 8px,transparent 8px 14px); }
+
+/* ── ABOUT ── */
+#about { background: var(--dark); border-top: var(--pixel) solid var(--yellow); border-bottom: var(--pixel) solid var(--yellow); }
+
+.about-grid {
+  display: grid; grid-template-columns: 260px 1fr; gap: 3rem; align-items: start;
+}
+
+.char-card {
+  background: var(--panel); padding: 1.2rem;
+  border: var(--pixel) solid var(--yellow);
+  box-shadow: 6px 6px 0 #665e00;
+  text-align: center;
+}
+.char-portrait {
+  width: 100%; aspect-ratio: 1; object-fit: cover;
+  display: block; margin-bottom: 0.8rem;
+  image-rendering: pixelated;
+  border: var(--pixel) solid var(--grey);
+  filter: contrast(1.1) saturate(0.8);
+}
+.char-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px; color: var(--yellow); margin-bottom: 4px;
+}
+.char-class {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px; color: var(--cyan); margin-bottom: 12px;
+}
+.char-stats { text-align: left; }
+.char-stat-row {
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px dashed var(--grey); padding: 5px 0;
+}
+.char-stat-row:last-child { border-bottom: none; }
+.cs-key {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px; color: var(--grey);
+}
+.cs-val {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px; color: var(--green);
+}
+
+/* STORY TEXT */
+.story-box {
+  background: var(--panel); border: var(--pixel) solid var(--cyan);
+  box-shadow: 6px 6px 0 #003a3a; padding: 1.5rem;
+  font-family: 'VT323', monospace; font-size: 22px; color: var(--white);
+  line-height: 1.7; margin-bottom: 2rem; position: relative;
+}
+.story-box::before {
+  content: '▶ BACKSTORY';
+  font-family: 'Press Start 2P', monospace; font-size: 7px;
+  color: var(--cyan); position: absolute; top: -14px; left: 12px;
+  background: var(--dark); padding: 0 8px;
+}
+
+/* CAREER TIMELINE */
+.timeline { display: flex; flex-direction: column; gap: 1rem; }
+.tl-item {
+  display: flex; gap: 1rem; align-items: flex-start;
+  background: var(--panel); border: 2px solid var(--grey);
+  padding: 1rem; transition: border-color 0.15s, box-shadow 0.15s;
+  cursor: default;
+}
+.tl-item:hover { border-color: var(--yellow); box-shadow: 4px 4px 0 #665e00; }
+.tl-icon { font-size: 2rem; line-height: 1; flex-shrink: 0; }
+.tl-body {}
+.tl-period {
+  font-family: 'Press Start 2P', monospace; font-size: 6px;
+  color: var(--magenta); margin-bottom: 4px;
+}
+.tl-role {
+  font-family: 'Press Start 2P', monospace; font-size: 8px;
+  color: var(--yellow); margin-bottom: 3px;
+}
+.tl-company { font-size: 17px; color: var(--cyan); margin-bottom: 5px; }
+.tl-link {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px; color: var(--black);
+  background: var(--cyan); padding: 5px 10px;
+  text-decoration: none; letter-spacing: 0.08em;
+  border: 2px solid #006a6a;
+  box-shadow: 2px 2px 0 #003a3a;
+  transition: transform 0.08s, box-shadow 0.08s;
+  display: inline-block;
+}
+.tl-link:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 #003a3a; }
+
+/* ── EXPERTISE ── */
+#expertise { background: var(--black); }
+
+.exp-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+}
+.exp-card {
+  background: var(--panel); border: var(--pixel) solid var(--grey);
+  padding: 1.5rem; position: relative; overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+  cursor: default;
+}
+.exp-card:hover {
+  border-color: var(--yellow); box-shadow: 6px 6px 0 #665e00;
+  transform: translate(-2px, -2px);
+}
+.exp-card::after {
+  content: attr(data-num);
+  font-family: 'Press Start 2P', monospace; font-size: 44px;
+  color: rgba(255,230,0,0.04);
+  position: absolute; bottom: -8px; right: 8px; line-height: 1;
+}
+.exp-icon { font-size: 2.5rem; margin-bottom: 0.8rem; display: block; }
+.exp-title {
+  font-family: 'Press Start 2P', monospace; font-size: 8px;
+  color: var(--yellow); margin-bottom: 0.8rem; line-height: 1.6;
+}
+.exp-desc { font-size: 18px; color: var(--grey); line-height: 1.6; }
+
+/* SKILL LEVEL bars */
+.skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; margin-top: 3rem; }
+.skill-row {}
+.skill-head {
+  display: flex; justify-content: space-between; margin-bottom: 6px;
+}
+.skill-name-lbl {
+  font-family: 'Press Start 2P', monospace; font-size: 7px; color: var(--white);
+}
+.skill-stars { color: var(--yellow); font-size: 14px; letter-spacing: 2px; }
+.pixel-bar-track {
+  height: 16px; background: #0a0a10; border: 2px solid var(--grey); overflow: hidden;
+  display: flex;
+}
+.pixel-bar-fill {
+  height: 100%; display: flex; gap: 2px; padding: 2px;
+  width: 0; transition: width 1.6s steps(10, end);
+}
+.pixel-seg {
+  width: 12px; flex-shrink: 0; height: 100%;
+  background: var(--green); box-shadow: inset 0 -2px 0 rgba(0,0,0,0.4);
+}
+.pixel-seg.yellow { background: var(--yellow); }
+.pixel-seg.cyan   { background: var(--cyan); }
+.pixel-seg.mag    { background: var(--magenta); }
+
+/* ── PORTFOLIO ── */
+#portfolio { background: var(--dark); border-top: var(--pixel) solid var(--magenta); }
+
+.stage-wrap {
+  border: var(--pixel) solid var(--magenta); box-shadow: 6px 6px 0 #550022;
+  background: var(--black); overflow: hidden;
+}
+
+.stage-header {
+  background: var(--magenta); padding: 8px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.stage-title {
+  font-family: 'Press Start 2P', monospace; font-size: 8px; color: var(--black);
+}
+.stage-dots { display: flex; gap: 6px; }
+.stage-dot {
+  width: 12px; height: 12px;
+  border: 2px solid rgba(0,0,0,0.3);
+}
+.stage-dot:nth-child(1){background:#ff5f56;}
+.stage-dot:nth-child(2){background:#ffbd2e;}
+.stage-dot:nth-child(3){background:#27c93f;}
+
+.game-select-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+  padding: 2px; background: #222;
+}
+.game-card {
+  background: var(--panel); position: relative; overflow: hidden;
+  cursor: pointer; transition: transform 0.1s;
+  border: 2px solid transparent;
+}
+.game-card:hover { border-color: var(--yellow); z-index: 2; transform: scale(1.02); }
+.game-card.big { grid-column: span 2; }
+
+.game-img {
+  width: 100%; display: block;
+  filter: saturate(0.7) brightness(0.65);
+  transition: filter 0.3s;
+  image-rendering: auto;
+}
+.game-card:hover .game-img { filter: saturate(1.1) brightness(0.85); }
+.game-card.big .game-img { height: 260px; object-fit: cover; }
+.game-card:not(.big) .game-img { height: 180px; object-fit: cover; }
+
+.game-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(10,10,15,0.97) 30%, transparent 70%);
+  padding: 10px; display: flex; flex-direction: column; justify-content: flex-end;
+}
+.game-tag {
+  font-family: 'Press Start 2P', monospace; font-size: 5px;
+  color: var(--cyan); margin-bottom: 4px; letter-spacing: 0.1em;
+}
+.game-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px; color: var(--yellow);
+  text-shadow: 2px 2px 0 #665e00; line-height: 1.5; margin-bottom: 4px;
+}
+.game-card.big .game-name { font-size: 11px; }
+.game-desc {
+  font-size: 15px; color: rgba(255,255,255,0.55);
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s;
+  line-height: 1.4;
+}
+.game-card:hover .game-desc { max-height: 60px; }
+.game-link {
+  display: inline-flex; align-items: center; gap: 4px; margin-top: 6px;
+  font-family: 'Press Start 2P', monospace; font-size: 6px;
+  color: var(--green); text-decoration: none;
+  opacity: 0; transform: translateY(4px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.game-card:hover .game-link { opacity: 1; transform: translateY(0); }
+.game-link::before { content: '▶'; }
+
+/* ── CONTACT ── */
+#contact { background: var(--black); border-top: var(--pixel) solid var(--green); }
+
+.contact-terminal {
+  background: var(--panel); border: var(--pixel) solid var(--green);
+  box-shadow: 8px 8px 0 #0a3300; max-width: 700px; margin: 0 auto; overflow: hidden;
+}
+.terminal-bar {
+  background: var(--green); padding: 8px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.terminal-bar-title {
+  font-family: 'Press Start 2P', monospace; font-size: 7px; color: var(--black);
+}
+.terminal-body { padding: 2rem; }
+.t-line {
+  font-family: 'VT323', monospace; font-size: 22px; margin-bottom: 0.6rem;
+  color: var(--green);
+}
+.t-line .t-prompt { color: var(--yellow); user-select: none; margin-right: 8px; }
+.t-line .t-cmd { color: var(--white); }
+.t-line .t-out { color: var(--cyan); padding-left: 24px; display: block; }
+.t-line .t-link { color: var(--green); text-decoration: underline; }
+.t-line a { color: inherit; text-decoration: none; }
+.t-line a:hover { text-decoration: underline; }
+
+.cursor-blink {
+  display: inline-block; width: 10px; height: 18px;
+  background: var(--green); vertical-align: bottom;
+  animation: blink 0.8s step-end infinite;
+}
+
+.contact-btns { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--dark); border-top: var(--pixel) solid var(--yellow);
+  padding: 1.5rem 3rem; position: relative; z-index: 1;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+}
+.footer-brand {
+  font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--yellow);
+  text-shadow: 2px 2px 0 #665e00;
+}
+.footer-copy { font-family: 'Press Start 2P', monospace; font-size: 6px; color: var(--grey); }
+.footer-copy span { color: var(--magenta); }
+.lives {
+  font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--magenta);
+  display: flex; align-items: center; gap: 6px;
+}
+.lives::before { content: '♥ ♥ ♥'; letter-spacing: 4px; }
+
+/* ── POWER BADGE ── */
+.power-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--panel); border: 2px solid var(--grey);
+  padding: 8px 12px; margin-top: 2rem;
+  font-family: 'Press Start 2P', monospace; font-size: 7px; color: var(--grey);
+}
+.power-badge span { color: var(--yellow); }
+
+/* ── FADE UP ── */
+.fade-up { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.fade-up.visible { opacity: 1; transform: none; }
+
+/* ── MOBILE ── */
+@media(max-width:860px){
+  nav ul { display: none; }
+  nav { padding: 0 1rem; }
+  .hero-score { display: none; }
+  .sprite-area { display: none; }
+  #hero { padding: 110px 1.2rem 3rem; }
+  .about-grid { grid-template-columns: 1fr; }
+  .exp-grid { grid-template-columns: 1fr; }
+  .skill-grid { grid-template-columns: 1fr; }
+  .game-select-grid { grid-template-columns: 1fr; }
+  .game-card.big { grid-column: span 1; }
+  .section-wrap { padding: 3rem 1.2rem; }
+  footer { flex-direction: column; align-items: flex-start; }
+}
+</style>
 </head>
+<body>
 
-<body id="top">
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>★ GAME DESIGNER</span><span class="sep">///</span>
+    <span>LEVEL DESIGNER</span><span class="sep">///</span>
+    <span>6+ YEARS XP</span><span class="sep">///</span>
+    <span>6 STUDIOS</span><span class="sep">///</span>
+    <span>MOBILE · SMART TV · WEBGL</span><span class="sep">///</span>
+    <span>PLAYD GAMES</span><span class="sep">///</span>
+    <span>DUMADU STUDIO</span><span class="sep">///</span>
+    <span>BIGCODE GAMES</span><span class="sep">///</span>
+    <span>7SEAS ENTERTAINMENT</span><span class="sep">///</span>
+    <!-- duplicate for seamless loop -->
+    <span>★ GAME DESIGNER</span><span class="sep">///</span>
+    <span>LEVEL DESIGNER</span><span class="sep">///</span>
+    <span>6+ YEARS XP</span><span class="sep">///</span>
+    <span>6 STUDIOS</span><span class="sep">///</span>
+    <span>MOBILE · SMART TV · WEBGL</span><span class="sep">///</span>
+    <span>PLAYD GAMES</span><span class="sep">///</span>
+    <span>DUMADU STUDIO</span><span class="sep">///</span>
+    <span>BIGCODE GAMES</span><span class="sep">///</span>
+    <span>7SEAS ENTERTAINMENT</span><span class="sep">///</span>
+  </div>
+</div>
 
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">BK.EXE</a>
+  <ul>
+    <li><a href="#about">PLAYER</a></li>
+    <li><a href="#expertise">SKILLS</a></li>
+    <li><a href="#portfolio">STAGES</a></li>
+    <li><a href="#contact">CONTACT</a></li>
+  </ul>
+  <a href="mailto:Bharathsai432@gmail.com" class="nav-insert">INSERT COIN</a>
+</nav>
 
-    <!-- preloader
-    ================================================== -->
-    <div id="preloader">
-        <div id="loader" class="dots-fade">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-score">
+    <div class="score-item">
+      <div class="score-label">HI-SCORE</div>
+      <div class="score-value">20+</div>
+      <div class="score-label">GAMES</div>
+    </div>
+    <div class="score-item">
+      <div class="score-label">LEVEL</div>
+      <div class="score-value">06</div>
+      <div class="score-label">YRS EXP</div>
+    </div>
+    <div class="score-item">
+      <div class="score-label">STUDIOS</div>
+      <div class="score-value">06</div>
+    </div>
+  </div>
+
+  <div class="hero-inner">
+    <div class="insert-coin">INSERT COIN TO CONTINUE</div>
+    <div class="player-select">— PLAYER ONE SELECT —</div>
+    <h1 class="hero-name">
+      BHARATH
+      <span class="name-2">KALYAN</span>
+    </h1>
+    <div class="hero-class">GAME DESIGNER &amp; LEVEL DESIGNER · 6+ YEARS XP</div>
+
+    <div class="stat-bars">
+      <div class="stat-row">
+        <div class="stat-lbl">HP</div>
+        <div class="bar-track"><div class="bar-fill hp" data-w="95"></div></div>
+        <div class="bar-val">95/100</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-lbl">XP</div>
+        <div class="bar-track"><div class="bar-fill xp" data-w="88"></div></div>
+        <div class="bar-val">88/100</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-lbl">MP</div>
+        <div class="bar-track"><div class="bar-fill mp" data-w="75"></div></div>
+        <div class="bar-val">75/100</div>
+      </div>
     </div>
 
+    <div class="hero-btns">
+      <a href="#portfolio" class="btn-8 btn-start">▶ START GAME</a>
+      <a href="mailto:Bharathsai432@gmail.com" class="btn-8 btn-p2">2P COLLAB</a>
+    </div>
 
-    <!-- header
-    ================================================== -->
-    <header class="s-header">
+    <div class="power-badge">TOOLS: <span>&nbsp;★ UNITY &nbsp;★ UNREAL &nbsp;★ FIGMA &nbsp;★ PHOTOSHOP &nbsp;★ MIRO &nbsp;★ MACHINATIONS</span></div>
+  </div>
 
-        <div class="header-logo">
-            <a href="index.html">
-                <img src="images/logo.svg" alt="Homepage">
-            </a>
+  <div class="sprite-area">🕹️</div>
+  <div class="ground"></div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-wrap">
+    <div class="sec-header fade-up">
+      <div class="sec-num">01</div>
+      <div class="sec-title">PLAYER PROFILE</div>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="about-grid" style="grid-template-columns:1fr;">
+
+      <div>
+        <div class="story-box fade-up">
+          Game Designer with 6+ years of experience creating casual, hyper-casual, action, and TV-based games across mobile, Smart TV, and web platforms. Expert in core mechanics, progression, economy, and monetization, with a strong focus on data-driven iteration and player-centric design. Proven collaborator delivering scalable, high-retention game experiences. 🎮
         </div>
 
-        <div class="header-content">
-    
-            <nav class="row header-nav-wrap">
-                <ul class="header-nav">
-                    <li><a class="smoothscroll" href="#hero" title="Intro">Home</a></li>
-                    <li><a class="smoothscroll" href="#about" title="About">About</a></li>
-                    <li><a class="smoothscroll" href="#portfolio" title="Works">Works</a></li>
-                    <li><a href="mailto:#0" title="Contact us">Say Hello</a></li>
-                </ul>
-            </nav> <!-- end header-nav-wrap -->
-
-            <a href="/images/Resume/_Bharath Resume.pdf" download class="btn btn--stroke btn--small">Download CV </a>
-
-        </div> <!-- end header-content -->
-
-        <a class="header-menu-toggle" href="#0"><span>Menu</span></a>
-
-    </header> 
-
-
-    <!-- hero
-    ================================================== -->
-    <section id="hero" class="s-hero target-section" data-parallax="scroll" data-image-src="images/hero-bg-3000.jpg" data-natural-width=3000 data-natural-height=2000 data-position-y=center>
-
-        <div class="row hero-content">
-
-            <div class="column large-full">
-
-                <h1>
-                Hello, I'm Sai Bharath Kalyan, <br>
-                as Game Designer <br>
-                </h1>
-
-                <ul class="hero-social">
-                    <li>
-                        <a href="https://www.linkedin.com/in/kalyan-05a4221a9/" title="">Linkedin</a>
-                    </li>
-                </ul> <!-- end hero-social -->
-
-            </div> 
-
-        </div> <!-- end hero-content -->
-
-        <div class="hero-scroll">
-            <a href="#about" class="scroll-link smoothscroll">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 24l-8-9h6v-15h4v15h6z"/></svg>
-            </a>
-        </div> <!-- end hero-scroll -->
-
-    </section> <!-- end s-hero -->
-
-
-    <!-- about
-    ================================================== -->
-    <section id="about" class="s-about target-section">
-
-        <div class="s-about__section s-about__section--profile">
-
-            <div class="right-vert-line"></div>
-
-            <div class="row">
-                <div class="column large-6 medium-8 tab-full">
-
-                    <div class="section-intro" data-num="01" data-aos="fade-up">
-                        <h3 class="subhead">About Me</h3>
-                        <h1 class="display-1">I'm someone who loves diving into fresh gaming challenges.</h1>
-                    </div>
-
-                    <div class="profile-pic" data-aos="fade-up">
-                        <img src="images/profile-pic.jpg" 
-                             srcset="images/profile-pic.jpg 1x, images/profile-pic@2x (2).jpg 2x" alt="">
-                    </div>
-                </div>
+        <div class="timeline">
+          <div class="tl-item fade-up">
+            <div class="tl-icon">🕹️</div>
+            <div class="tl-body">
+              <div class="tl-period">JAN 2025 – PRESENT</div>
+              <div class="tl-role">GAME DESIGNER</div>
+              <div class="tl-company">PlayD Games Studio Pvt Ltd</div>
+              <div class="tl-desc">Developed and launched games across Google Play Store, Smart TV, and Amazon Fire TV. Currently building WebGL-based cross-platform experiences for mobile, TV, and web.</div>
+              <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+                <a href="https://play.google.com/store/apps/dev?id=7083092529579352627&hl=en_IN&gl=US" target="_blank" class="tl-link">▶ GOOGLE PLAY</a>
+                <a href="https://www.amazon.com/s?i=mobile-apps&rh=p_4%3ABig%2BBoss%2BGames&search-type=ss" target="_blank" class="tl-link">▶ AMAZON FIRE TV</a>
+              </div>
             </div>
-
-        </div> <!-- end s-about__section--profile -->
-
-        <div class="s-about__section">
-
-            <div class="row">
-                <div class="column">
-                    <h3 data-aos="fade-up">Work Experience</h3>
-                </div>
+          </div>
+          <div class="tl-item fade-up">
+            <div class="tl-icon">🎮</div>
+            <div class="tl-body">
+              <div class="tl-period">FEB 2024 – JAN 2025</div>
+              <div class="tl-role">ASSOCIATE GAME DESIGNER</div>
+              <div class="tl-company">Dumadu Studio Pvt Ltd</div>
+              <div class="tl-desc">Designed and launched gameplay features, implemented player-friendly monetization strategies, and integrated Google Play Services to enhance engagement, retention, and platform-specific gameplay.</div>
+              <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+                <a href="https://play.google.com/store/apps/developer?id=Happy+Adda+Studios+Pvt+Ltd&hl=en_US" target="_blank" class="tl-link">▶ GOOGLE PLAY</a>
+              </div>
             </div>
-
-            <div class="row block-large-1-2 block-900-full work-positions">
-
-                <div class="column" data-aos="fade-up">
-                    <div class="position">
-                        <div class="position__header">
-                            <h6>
-                                <span class="position__co">Bigcode Games Private Limited</span>
-                                <span class="position__pos">Game Designer</span>
-                            </h6>
-                            <div class="position__timeframe">
-                                Jan 2021 - Sep 2023
-                            </div>
-                        </div>
-
-                        <p>
-                            Started working as an Game designer for Bigcode Games. 
-                            
-                            I was in charge during this period
-                            planning and implementation, all new game ideas & concept.
-                            
-                            Shipped 10+ Hyper casual and also 2 highly engaged features
-                            and 5 + Simulation game 
-                        </p>
-                    </div>
-                </div> <!-- end column -->
-                <div class="column" data-aos="fade-up">
-                    <div class="position">
-                        <div class="position__header">
-                            <h6>
-                                <span class="position__co">7seas Entertainment Company</span>
-                                <span class="position__pos">Game Designer,UI-Designer</span>
-                            </h6>
-                            <div class="position__timeframe">
-                                April 2019 - Jan 2021 
-                            </div>
-                        </div>
-
-                        <p>
-                            Worked in accordance with senior ideas and arranged of
-                            levels.
-
-                            Shipped 5+ Hyper casual games and also Designed UI
-                            (Same games).   
-                        </p>
-                    </div>
-                </div> <!-- end column -->
-
-            </div> <!-- work positions -->
-
-        </div> <!-- end s-about__section -->
-
-    </section> <!-- end s-about -->
-
-
-    <!-- services
-    ================================================== -->
-    <section id="services" class="s-services target-section h-dark-bg">
-        
-        <div class="row s-services__content">
-
-            <div class="vert-line"></div>
-
-            <div class="column large-6 s-services__leftcol">
-                <div class="section-intro" data-num="02" data-aos="fade-up">
-                    <h3 class="subhead">Expertise</h3>
-
-                    <h1 class="display-1">
-                    I focus on crafting Game Designing experiences
-                    </h1>
-                </div>
-            </div> <!-- end  s-services--leftcol -->
-
-            <div class="column large-6">
-                <ul class="services-list" data-aos="fade-up">
-                    <li class="services-list__item is-active">
-                        <div class="services-list__item-header">
-                            <h5>Game Designer</h5>
-                            <div class="services-list__item-body">
-                                <ul class="skill-bars">
-                                    <li>
-                                    <div class="progress percent80"><span> 80% </span></div>
-                                    </ul>
-                        </div>
-                    </li> <!-- services-list__item -->
-                    <li class="services-list__item">
-                        <div class="services-list__item-header">
-                            <h5>Level Designer</h5>
-                        </div>
-                        <div class="services-list__item-body">
-                            <ul class="skill-bars">
-                                <li>
-                                <div class="progress percent80"><span> 80% </span></div>
-                                </ul>
-                        </div>
-                    </li> <!-- services-list__item -->
-                    <li class="services-list__item">
-                        <div class="services-list__item-header">
-                            <h5>Game Design Documentation</h5>
-                        </div>
-                        <div class="services-list__item-body">
-                            <ul class="skill-bars">
-                                <li>
-                                <div class="progress percent80"><span> 80% </span></div>
-                                </ul>
-                        </div>
-                    </li> <!-- services-list__item -->
-                    <li class="services-list__item">
-                        <div class="services-list__item-header">
-                            <h5>Unity</h5>
-                        </div>
-                        <div class="services-list__item-body">
-                            <ul class="skill-bars">
-                                <li>
-                                <div class="progress percent80"><span> 80% </span></div>
-                                </ul>
-                        </div>
-                    </li> <!-- services-list__item -->
-                    <li class="services-list__item">
-                        <div class="services-list__item-header">
-                            <h5>Unreal Engine </h5>
-                        </div>
-                        <div class="services-list__item-body">
-                            <ul class="skill-bars">
-                                <li>
-                                <div class="progress percent80"><span> 80% </span></div>
-                                </ul>
-                        </div>
-                </div>
-                </ul> <!-- end services-list -->
+          </div>
+          <div class="tl-item fade-up">
+            <div class="tl-icon">🐄</div>
+            <div class="tl-body">
+              <div class="tl-period">SEP 2023 – OCT 2023</div>
+              <div class="tl-role">GAME DESIGNER · LEVEL DESIGNER</div>
+              <div class="tl-company">Holy Cow Studios Pvt Ltd</div>
+              <div class="tl-desc">Structured level data using JSON, collaborated on core gameplay mechanics, and optimised level design and difficulty through playtesting to improve pacing, replayability, and player retention.</div>
+              <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+                <a href="https://play.google.com/store/apps/details?id=com.holycowstudio.my.home.design.makeover.games.dream.word.redecorate.masters.life.house.decorating" target="_blank" class="tl-link">▶ GOOGLE PLAY</a>
+              </div>
             </div>
-
-        </div> <!-- s-services__content -->
-
-    </section> <!-- end s-services -->
-
-
-    <!-- portfolio
-    ================================================== -->
-    <section id="portfolio" class="s-portfolio target-section">
-
-        <div class="row s-portfolio__header">
-            <div class="column large-6 medium-8 tab-full">
-                <div class="section-intro" data-num="03" data-aos="fade-up">
-                    <h3 class="subhead">Portfolio</h3>
-                    <h1 class="display-1">
-                        A selection of recent projects I have worked on.
-                    </h1>
-                </div>
+          </div>
+          <div class="tl-item fade-up">
+            <div class="tl-icon">🎲</div>
+            <div class="tl-body">
+              <div class="tl-period">JUL 2023 – SEP 2023</div>
+              <div class="tl-role">GAME DESIGNER</div>
+              <div class="tl-company">Amgo Games Pvt Ltd</div>
+              <div class="tl-desc">Designed and developed engaging casual games, maintained clear GDDs, implemented immersive levels in Unity, and collaborated cross-functionally to align gameplay with project and user goals.</div>
+              <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+                <a href="https://play.google.com/store/apps/dev?id=8496036679882214346&hl=en_US" target="_blank" class="tl-link">▶ GOOGLE PLAY</a>
+              </div>
             </div>
-        </div> <!-- s-porfolio__header -->
-
-        <div class="row s-porfolio__list block-large-1-2 block-tab-full collapse">
-
-            <div class="column" data-aos="fade-up">
-                <div class="folio-item">
-                    <div class="folio-item__thumb">
-                        <a class="folio-item__thumb-link" href="images/portfolio/gallery/g-goodchef level design.jpg" title="Good Chef" data-size="1050x700">
-                            <img src="images/portfolio/Level Design.jpg" 
-                                 srcset="images/portfolio/Level Design.jpg 1x, images/portfolio/Level Design@2x.jpg 2x" alt="">
-                        </a>
-                    </div>
-                    <div class="folio-item__info">
-                        <div class="folio-item__cat">Game Designer , Level Designer</div>
-                        <h4 class="folio-item__title">Good Chef</h4>
-                    </div>
-                    <a href="https://play.google.com/store/apps/details?id=com.mtsfreegames.goodchef.restaurant.cookinggame" title="Project Link" class="folio-item__project-link">Project Link</a>
-                    <div class="folio-item__caption">
-                        <p> Get ready to be a good chef! Prepare delicious food in your restaurant.
-                            Cook different types of food like burger, pizza, hot dogs etc.
-                            Serve your customers juices, soft drinks with the food to complete the order.
-                            Make your customer happy by serving food items on time. Buy and upgrade kitchens and restaurant with the game progress.
-                            
-                            Game Features:-
-                            
-                            * Free Game to play
-                            * Different unique levels with lots of fun
-                            * New restaurant & themes to upgrade
-                            * Upgrade new kitchens & new characters
-                            * Music festival & party themes to enjoy
-                            * Delicious Barbeque dishes to prepare
-                            
-                            Download your new game - Good Chef - Cooking games now! Have Fun!.</p>
-                    </div>
-                </div>
-            </div> <!-- end column -->
-            <div class="column" data-aos="fade-up">
-                <div class="folio-item">
-                    <div class="folio-item__thumb">
-                        <a class="folio-item__thumb-link" href="images/portfolio/gallery/g-Farming Cow level design.jpg" title="FARMING COW" data-size="1050x700">
-                            <img src="images/portfolio/Farming Cow.jpg" 
-                                 srcset="images/portfolio/Farming Cow.jpg , images/portfolio/FarmingCow@2x.jpg" alt="">
-                        </a>
-                    </div>
-                    <div class="folio-item__info">w
-                        <div class="folio-item__cat">Level Designer ,Game Concept Designer</div>
-                        <h4 class="folio-item__title">Farming Cow</h4>
-                    </div>
-                    <a href="https://play.google.com/store/apps/details?id=com.mtsfreegames.farmingcow" title="Project Link" class="folio-item__project-link">Project Link</a>
-                    <div class="folio-item__caption">
-                        <p>Breed the animals, raise the cow & harvest your crop in the new farming game.
-                        Upgrade your farm with animals, factories and crops to earn coins! Take the challenge & start a farming empire.</p>
-                    </div>
-                </div>
-            </div> <!-- end column -->
-            <div class="column" data-aos="fade-up">
-                <div class="folio-item">
-                    <div class="folio-item__thumb">
-                        <a class="folio-item__thumb-link" href="images/portfolio/gallery/g-Unicorn Run level design.jpg" Title="Unicorn Run PVP -Running Games" data-size="1050x700">
-                            <img src="images/portfolio/Unicorn Run level design.png" 
-                                 srcset="images/portfolio/Unicorn Run level design.png 1x, images/portfolio/Unicorn Run level design@2x.png" alt="">
-                        </a>
-                    </div>
-                    <div class="folio-item__info">
-                        <div class="folio-item__cat">Level Designer</div>
-                        <h4 class="folio-item__title">Unicorn Run PVP -Running Games</h4>
-                    </div>
-                    <a href="https://play.google.com/store/apps/details?id=com.mtsfreegames.unicorn.magical.run.pony.games" title="Unicorn Run PVP -Running Games" class="folio-item__project-link">Project Link</a>
-                    <div class="folio-item__caption">
-                        <p> Unicorn Run Multiplayer is an endless running game! The Run game with beautiful unicorns & ponies. You have two modes to play, single player & multiplayer game mode.</p>
-                    </div>
-                </div>
-            </div> <!-- end column -->
-            <div class="column" data-aos="fade-up">
-                <div class="folio-item">
-                    <div class="folio-item__thumb">
-                        <a class="folio-item__thumb-link" href="images/portfolio/gallery/g-Dogrun level design.jpg" title="Dog Run 3D - Pet Runner" data-size="1050x700">
-                            <img src="images/portfolio/Dogrun level design.jpg" 
-                                 srcset="images/portfolio/Dogrun level design.jpg 1x, images/portfolio/Dogrun level design@2x.jpg 2x" alt="">
-                        </a>
-                    </div>
-                    <div class="folio-item__info">
-                        <div class="folio-item__cat">Game Designer , Level Designer</div>
-                        <h4 class="folio-item__title">Dog Run 3D - Pet Runner</h4>
-                    </div>
-                    <a href="https://play.google.com/store/apps/details?id=com.mtsfreegames.dogrun3d.pet.simulator" title="Dog Run 3D - Pet Runner" class="folio-item__project-link">Project Link</a>
-                    <div class="folio-item__caption">
-                        <p> Choose your favourite dog or pet to dash through the urban city for fun running journey!
-
-                            Play with your pet dog by choosing from cute puppy. Play an amazing dog running game with lot of fun activities and collections. Get the rewards while playing and exploring city, parks & other islands.
-                            
-                            Run and Dash as fast as you can, dodge obstacles and collect coins!
-                            
-                            Swipe to Run, slide and jump your way across the city, suburbs, park and forest!.</p>
-                    </div>
-                </div>
-            </div> <!-- end column -->
-            <div class="column" data-aos="fade-up">
-                <div class="folio-item">
-                    <div class="folio-item__thumb">
-                        <a class="folio-item__thumb-link" href="images/portfolio/gallery/g-Dino attack.jpg" title="Dino Attack Simulator" data-size="1050x700">
-                            <img src="images/portfolio/Dino attack.jpg" 
-                                 srcset="images/portfolio/Dino attack.jpg 1x, images/portfolio/Dino Attack@2x.jpg 2x" alt="">
-                        </a>
-                    </div>
-                    <div class="folio-item__info">
-                        <div class="folio-item__cat">Level Designer</div>
-                        <h4 class="folio-item__title">Dino Attack Simulator</h4>
-                    </div>
-                    <a href="https://play.google.com/store/apps/details?id=com.mtsfreegames.dino.attack.simulator" title="Dino Attack Simulator" class="folio-item__project-link">Project Link</a>
-                    <div class="folio-item__caption">
-                        <p> Play the role of Dinosaur and attack the other animals and Trex dinosaurs. 
-                            The best animal revolt battle simulator game! Join the deadly Trex battle revolt on the ramp. 
-                            Upgrade your favourite Trex Dino with progress. 
-                            Upgrade new skins of dinosaurs. Play and Fight on the ramp in the game of Dino battle simulator.</p>
-                    </div>
-                </div>
-            </div> <!-- end column -->
-            <div class="column" data-aos="fade-up">
-                <div class="folio-item">
-                    <div class="folio-item__thumb">
-                        <a class="folio-item__thumb-link" href="images/portfolio/gallery/g-Evil rider.jpg" title="Evil Rider" data-size="1050x700">
-                            <img src="images/portfolio/Evilrider.jpg" 
-                                 srcset="images/portfolio/Evilrider.jpg 1x, images/portfolio/Evilrider@2x.png 2x" alt="">
-                        </a>
-                    </div>
-                    <div class="folio-item__info">
-                        <div class="folio-item__cat">Game Designer , Level Designer</div>
-                        <h4 class="folio-item__title">Evil Rider</h4>
-                    </div>
-                    <a href="https://play.google.com/store/apps/details?id=com.bigcodegames.evil.rider3d" title="Evil Riders" class="folio-item__project-link">Project Link</a>
-                    <div class="folio-item__caption">
-                        <p> My Experience in crafting immersive game levels, focusing on player navigation, pacing, and strategic element placement.
-
-                            Proficient in creating and refining Game Design Documents (GDD) and optimizing game economies for engaging player experiences, including virtual currencies, in-game purchases, and monetization strategies.</p>
-                    </div>
-                </div>
-            </div> <!-- end column -->
-            <div class="column" data-aos="fade-up">
-                <div class="folio-item">
-                    <div class="folio-item__thumb">
-                        <a class="folio-item__thumb-link" href="images/portfolio/gallery/g-Angry Man level design.jpg" title="AngryMan" data-size="2160x1080">
-                            <img src="images/portfolio/Angry Man level design.jpg" 
-                                 srcset="images/portfolio/Angry Man level design.jpg 1x, images/portfolio/Angry Man level design@2x.jpg 2x" alt="">
-                        </a>
-                    </div>
-                    <div class="folio-item__info">
-                        <div class="folio-item__cat">Level Designer, UI Designs & Promos</div>
-                        <h4 class="folio-item__title">AngryMan</h4>
-                    </div>
-                    <a href="https://play.google.com/store/apps/details?id=com.sevenseas.angryman" title="AngryMan" class="folio-item__project-link">Project Link</a>
-                    <div class="folio-item__caption">
-                        <p> Eat more Bananas and help Yourself Score and get More Lives to Use within the Game.
-                            
-                            Run, Jump, Bounce and Swing on Vines as you help Angry Kid Run.
-                            
-                            
-                            This is a very Easy Game to play and Free to Download.
-                            Enjoy The Wild Adventures.</p>
-                    </div>
-                </div>
-            </div> <!-- end column -->
-            <div class="column" data-aos="fade-up">
-                <div class="folio-item">
-                    <div class="folio-item__thumb">
-                        <a class="folio-item__thumb-link" href="images/portfolio/gallery/g-Shark Run.jpg" title="Shark Run 3D" data-size="809x1440">
-                            <img src="images/portfolio/Shark Run.jpg" 
-                                 srcset="images/portfolio/Shark Run.jpg 1x, images/portfolio/Shark Run@ 2x.png 2x" alt="">
-                        </a>
-                    </div>
-                    <div class="folio-item__info">
-                        <div class="folio-item__cat">Game Designer , Level Designer</div>
-                        <h4 class="folio-item__title">Shark Run 3D</h4>
-                    </div>
-                    <a href="https://play.google.com/store/apps/details?id=com.mtsfreegames.shark.run3d" title="Shark Run 3D" class="folio-item__project-link">Project Link</a>
-                    <div class="folio-item__caption">
-                        <p>
-                            An amazing adventure run game of shark. Be like a shark and eat all of them on your way in this beautiful running game. Dash through the obstacles and collect coins to win the game. Collect maximum power to boost your energy. Get the full boost to destroy and eat all of them!
-
-                            Shark Run Game Features:
-                            
-                            • Free game to play
-                            • New sharks to upgrade
-                            • Amazing animations and HD graphics
-                            • Merge the sharks to become powerful shark
-                            • Easy controls and smooth runner gameplay
-                            Download your favorite shark game now!</p>
-                    </div>
-                </div>
-            </div> <!-- end column -->
-            <div class="column" data-aos="fade-up">
-                <div class="folio-item">
-                    <div class="folio-item__thumb">
-                        <a class="folio-item__thumb-link" href="images/portfolio/gallery/g-ColorMob level design.png" title="Shark Run 3D" data-size="809x1440">
-                            <img src="images/portfolio/ColorMob level design.png" 
-                                 srcset="images/portfolio/ColorMob level design.png 1x, images/portfolio/ColorMob level design@2x.png 2x" alt="">
-                        </a>
-                    </div>
-                    <div class="folio-item__info">
-                        <div class="folio-item__cat">Level Designer</div>
-                        <h4 class="folio-item__title">Color Mob</h4>
-                    </div>
-                    <a href="https://play.google.com/store/apps/details?id=com.mtsfreegames.color.mob" title="Color Mob" class="folio-item__project-link">Project Link</a>
-                    <div class="folio-item__caption">
-                        <p>
-                            Your mission is to form the big mob by passing through the same Color gate. You need to multiply your strength & defeat your enemy. Have a blast!</p>
-                    </div>
-                </div>
-            </div> <!-- end column -->
-        </div> <!-- folio-list -->
-
-    </section> <!-- end portfolio -->
-
-    <!-- footer
-    ================================================== -->
-    <footer class="s-footer h-dark-bg">
-        
-        <div class="right-vert-line"></div>
-
-        <div class="row s-footer__main">
-            <div class="column large-6">
-                <div class="section-intro" data-aos="fade-up">
-                    <h3 class="subhead">Get In Touch</h3>
-
-                    <h1 class="display-1">
-                    Have an idea or a concept that really excite you?
-                    Let's turn that idea into reality. Shoot me a message.
-                    </h1>
-                </div>
-
-                <div class="footer-email-us">
-                    <a href="mailto:#0" class="btn btn--primary h-full-width">Let's Talk</a>
-                </div>
+          </div>
+          <div class="tl-item fade-up">
+            <div class="tl-icon">🏢</div>
+            <div class="tl-body">
+              <div class="tl-period">JAN 2021 – JUL 2023</div>
+              <div class="tl-role">GAME DESIGNER</div>
+              <div class="tl-company">BigCode Games Pvt Ltd</div>
+              <div class="tl-desc">Led 3D level design and balancing, developed monetisation strategies, and created game concept pitches that secured stakeholder approval and improved engagement and revenue.</div>
+              <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+                <a href="https://play.google.com/store/apps/dev?id=7083092529579352627&hl=en_IN&gl=US" target="_blank" class="tl-link">▶ GOOGLE PLAY</a>
+              </div>
             </div>
-
-            <div class="column large-5">
-                <div class="footer-contacts">
-                    <div class="footer-contact-block" data-aos="fade-up">
-                        <h5 class="footer-contact-block__header">
-                            Email
-                        </h5>
-                        <p class="footer-contact-block__content">
-                            <a href="mailto:#0">Bharathsai432@gmail.com</a>
-                        </p>
-                    </div> <!-- end footer-contact-block -->
-                    <div class="footer-contact-block" data-aos="fade-up">
-                        <h5 class="footer-contact-block__header">
-                            Phone
-                        </h5>
-                        <p class="footer-contact-block__content">
-                            <a href="tel:+917330839551">+91 733 083 9551</a>
-                        </p>
-                    </div> <!-- end footer-contact-block -->
-                    <br>
-                    <div class="footer-contact-block" data-aos="fade-up">
-                        <h5 class="footer-contact-block__header">
-                            Social
-                        </h5>
-                        <ul class="footer-contact-block__list">
-                            <li><a href="https://www.linkedin.com/in/kalyan-05a4221a9/">Linkedin</a></li>
-                           
-                        </ul>
-                    </div> <!-- end footer-contact-block -->
-                </div>
+          </div>
+          <div class="tl-item fade-up">
+            <div class="tl-icon">⚔️</div>
+            <div class="tl-body">
+              <div class="tl-period">NOV 2019 – DEC 2020</div>
+              <div class="tl-role">JUNIOR GAME DESIGNER · UI DESIGNER</div>
+              <div class="tl-company">7Seas Entertainment Company</div>
+              <div class="tl-desc">Designed levels and UI screens for Angry Kid and Knife Hit. Conducted playtesting and iterative improvements to enhance user experience.</div>
             </div>
-        </div> <!-- end s-footer__main -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        <div class="row s-footer__bottom">
-            <div class="column large-full ss-copyright">
-                <span>© Copyright Bharath 2023</span> 
-            </div> <!-- end ss-copyright -->
+<!-- EXPERTISE -->
+<section id="expertise">
+  <div class="section-wrap">
+    <div class="sec-header fade-up">
+      <div class="sec-num">02</div>
+      <div class="sec-title">SKILL TREE</div>
+      <div class="sec-line"></div>
+    </div>
 
-            <div class="ss-go-top">
-                <a class="smoothscroll" title="Back to Top" href="#top">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0l8 9h-6v15h-4v-15h-6z"/></svg>
-                </a>
-            </div> <!-- end ss-go-top -->
-        </div> <!-- end s-footer__bottom -->
+    <div class="exp-grid">
+      <div class="exp-card fade-up" data-num="01">
+        <span class="exp-icon">🎮</span>
+        <div class="exp-title">GAME DESIGN</div>
+        <div class="exp-desc">Immersing in diverse games, distilling insights into unique gameplay systems — mechanics, story arcs, and complete player journeys.</div>
+      </div>
+      <div class="exp-card fade-up" data-num="02">
+        <span class="exp-icon">🗺️</span>
+        <div class="exp-title">LEVEL DESIGN</div>
+        <div class="exp-desc">2D layout sketches to full 3D Unity prototypes. Environments, asset placement, and gameplay flow balanced for maximum engagement.</div>
+      </div>
+      <div class="exp-card fade-up" data-num="03">
+        <span class="exp-icon">📄</span>
+        <div class="exp-title">GDD / DOCS</div>
+        <div class="exp-desc">Comprehensive Game Design Documents: mechanics, levels, UI/UX refs, character design and narrative — clear foundation for dev success.</div>
+      </div>
+    </div>
 
-    </footer> <!-- end s-footer -->
+    <div class="skill-grid">
+      <div class="skill-row fade-up">
+        <div class="skill-head">
+          <div class="skill-name-lbl">GAME DESIGN</div>
+          <div class="skill-stars">★★★★★</div>
+        </div>
+        <div class="pixel-bar-track" data-segs="9" data-color="green"></div>
+      </div>
+      <div class="skill-row fade-up">
+        <div class="skill-head">
+          <div class="skill-name-lbl">CORE LOOP DESIGN</div>
+          <div class="skill-stars">★★★★★</div>
+        </div>
+        <div class="pixel-bar-track" data-segs="9" data-color="cyan"></div>
+      </div>
+      <div class="skill-row fade-up">
+        <div class="skill-head">
+          <div class="skill-name-lbl">LEVEL DESIGN & TUNING</div>
+          <div class="skill-stars">★★★★★</div>
+        </div>
+        <div class="pixel-bar-track" data-segs="8" data-color="yellow"></div>
+      </div>
+      <div class="skill-row fade-up">
+        <div class="skill-head">
+          <div class="skill-name-lbl">GAMEPLAY MECHANICS</div>
+          <div class="skill-stars">★★★★★</div>
+        </div>
+        <div class="pixel-bar-track" data-segs="8" data-color="mag"></div>
+      </div>
+      <div class="skill-row fade-up">
+        <div class="skill-head">
+          <div class="skill-name-lbl">PLAYER PROGRESSION</div>
+          <div class="skill-stars">★★★★☆</div>
+        </div>
+        <div class="pixel-bar-track" data-segs="8" data-color="green"></div>
+      </div>
+      <div class="skill-row fade-up">
+        <div class="skill-head">
+          <div class="skill-name-lbl">UX / GAME UX</div>
+          <div class="skill-stars">★★★★☆</div>
+        </div>
+        <div class="pixel-bar-track" data-segs="7" data-color="cyan"></div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="section-wrap">
+    <div class="sec-header fade-up">
+      <div class="sec-num">03</div>
+      <div class="sec-title">SELECT STAGE</div>
+      <div class="sec-line"></div>
+    </div>
 
-    <!-- photoswipe background
-    ================================================== -->
-    <div aria-hidden="true" class="pswp" role="dialog" tabindex="-1">
+    <div class="stage-wrap fade-up">
+      <div class="stage-header">
+        <div class="stage-title">★ SHIPPED TITLES — CHOOSE YOUR LEVEL</div>
+        <div class="stage-dots"><div class="stage-dot"></div><div class="stage-dot"></div><div class="stage-dot"></div></div>
+      </div>
 
-        <div class="pswp__bg"></div>
-        <div class="pswp__scroll-wrap">
-
-            <div class="pswp__container">
-                <div class="pswp__item"></div>
-                <div class="pswp__item"></div>
-                <div class="pswp__item"></div>
-            </div>
-
-            <div class="pswp__ui pswp__ui--hidden">
-                <div class="pswp__top-bar">
-                    <div class="pswp__counter"></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button> <button class="pswp__button pswp__button--share" title=
-                    "Share"></button> <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button> <button class="pswp__button pswp__button--zoom" title=
-                    "Zoom in/out"></button>
-                    <div class="pswp__preloader">
-                        <div class="pswp__preloader__icn">
-                            <div class="pswp__preloader__cut">
-                                <div class="pswp__preloader__donut"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-                    <div class="pswp__share-tooltip"></div>
-                </div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button> <button class="pswp__button pswp__button--arrow--right" title=
-                "Next (arrow right)"></button>
-                <div class="pswp__caption">
-                    <div class="pswp__caption__center"></div>
-                </div>
-            </div>
-
+      <div class="game-select-grid">
+        <div class="game-card big">
+          <img src="https://bharath3699.github.io/Portfolio/images/portfolio/Level Design.jpg" alt="Good Chef" class="game-img"
+               onerror="this.style.background='#1a1a2e';this.style.minHeight='260px'">
+          <div class="game-overlay">
+            <div class="game-tag">GAME DESIGNER · LEVEL DESIGNER · DRAG &amp; DROP</div>
+            <div class="game-name">GOOD CHEF</div>
+            <div class="game-desc">Cook burgers, pizza &amp; hot dogs across unique restaurant levels. Upgrade kitchens &amp; themes. Shipped with music festival &amp; BBQ expansions.</div>
+            <a href="https://play.google.com/store/apps/details?id=com.mtsfreegames.goodchef.restaurant.cookinggame" target="_blank" class="game-link">PLAY STORE</a>
+          </div>
         </div>
 
-    </div> <!-- end photoSwipe background -->
+        <div class="game-card">
+          <img src="https://bharath3699.github.io/Portfolio/images/portfolio/Evil rider.jpg" alt="Evil Rider" class="game-img"
+               onerror="this.style.background='#1a0d2e';this.style.minHeight='180px'">
+          <div class="game-overlay">
+            <div class="game-tag">GAME DESIGNER · LEVEL DESIGNER</div>
+            <div class="game-name">EVIL RIDER 3D</div>
+            <div class="game-desc">Highway zombie shooter. Mission-based armoured vehicle unlocks.</div>
+            <a href="https://play.google.com/store/apps/details?id=com.bigcodegames.evil.rider3d" target="_blank" class="game-link">PLAY STORE</a>
+          </div>
+        </div>
 
+        <div class="game-card">
+          <img src="https://bharath3699.github.io/Portfolio/images/portfolio/Farming Cow.jpg" alt="Farming Cow" class="game-img"
+               onerror="this.style.background='#0d1a10';this.style.minHeight='180px'">
+          <div class="game-overlay">
+            <div class="game-tag">LEVEL DESIGNER · CONCEPT DESIGNER</div>
+            <div class="game-name">FARMING COW</div>
+            <div class="game-desc">Breed animals, harvest crops &amp; build a farming empire.</div>
+            <a href="https://play.google.com/store/apps/details?id=com.mtsfreegames.farmingcow" target="_blank" class="game-link">PLAY STORE</a>
+          </div>
+        </div>
 
-    <!-- Java Script
-    ================================================== -->
-    <script src="js/jquery-3.2.1.min.js"></script>
-    <script src="js/plugins.js"></script>
-    <script src="js/main.js"></script>
+        <div class="game-card">
+          <img src="https://bharath3699.github.io/Portfolio/images/portfolio/Unicorn Run level design.png" alt="Unicorn Run" class="game-img"
+               onerror="this.style.background='#1a0d2e';this.style.minHeight='180px'">
+          <div class="game-overlay">
+            <div class="game-tag">LEVEL DESIGNER</div>
+            <div class="game-name">UNICORN RUN PVP</div>
+            <div class="game-desc">Endless runner with global multiplayer &amp; magical obstacle paths.</div>
+            <a href="https://play.google.com/store/apps/details?id=com.mtsfreegames.unicorn.magical.run.pony.games" target="_blank" class="game-link">PLAY STORE</a>
+          </div>
+        </div>
 
+        <div class="game-card">
+          <img src="https://bharath3699.github.io/Portfolio/images/portfolio/Dogrun level design.jpg" alt="Dog Run" class="game-img"
+               onerror="this.style.background='#1a1200';this.style.minHeight='180px'">
+          <div class="game-overlay">
+            <div class="game-tag">GAME DESIGNER · LEVEL DESIGNER</div>
+            <div class="game-name">DOG RUN 3D</div>
+            <div class="game-desc">Urban city pet runner with swipe controls, coins &amp; island worlds.</div>
+            <a href="https://play.google.com/store/apps/details?id=com.mtsfreegames.dogrun3d.pet.simulator" target="_blank" class="game-link">PLAY STORE</a>
+          </div>
+        </div>
+
+        <div class="game-card">
+          <img src="https://bharath3699.github.io/Portfolio/images/portfolio/Dino attack.jpg" alt="Dino Attack" class="game-img"
+               onerror="this.style.background='#0d1a0d';this.style.minHeight='180px'">
+          <div class="game-overlay">
+            <div class="game-tag">LEVEL DESIGNER</div>
+            <div class="game-name">DINO ATTACK</div>
+            <div class="game-desc">T-Rex ramp battle simulator with progressive skin upgrades.</div>
+            <a href="https://play.google.com/store/apps/details?id=com.mtsfreegames.dino.attack.simulator" target="_blank" class="game-link">PLAY STORE</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-wrap">
+    <div class="sec-header fade-up">
+      <div class="sec-num">04</div>
+      <div class="sec-title">CONTACT TERMINAL</div>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="contact-terminal fade-up">
+      <div class="terminal-bar">
+        <div class="terminal-bar-title">BHARATH_KALYAN.EXE — CONTACT</div>
+        <div class="stage-dots"><div class="stage-dot"></div><div class="stage-dot"></div><div class="stage-dot"></div></div>
+      </div>
+      <div class="terminal-body">
+        <div class="t-line"><span class="t-prompt">$</span><span class="t-cmd">whoami</span></div>
+        <div class="t-line"><span class="t-out">Sai Bharath Kalyan — Game Designer, 6+ yrs · India</span></div>
+        <div class="t-line"><span class="t-prompt">$</span><span class="t-cmd">cat education.txt</span></div>
+        <div class="t-line"><span class="t-out">🎓 BFA Animation & Gaming — JNAFAU (2016–2020) CGPA: 8.5</span></div>
+        <div class="t-line"><span class="t-prompt">$</span><span class="t-cmd">cat contact.txt</span></div>
+        <div class="t-line"><span class="t-out">📧 EMAIL &nbsp;&nbsp; → <a href="mailto:Bharathsai432@gmail.com" class="t-link">Bharathsai432@gmail.com</a></span></div>
+        <div class="t-line"><span class="t-out">📱 PHONE &nbsp;&nbsp; → <a href="tel:+917330839551" class="t-link">+91 733 083 9551</a></span></div>
+        <div class="t-line"><span class="t-out">💼 LINKEDIN → <a href="https://www.linkedin.com/in/kalyansaib/" target="_blank" class="t-link">linkedin.com/in/kalyansaib</a></span></div>
+        <div class="t-line"><span class="t-prompt">$</span><span class="t-cmd">echo "Have a game idea? Let's build it."</span></div>
+        <div class="t-line"><span class="t-out">Have a game idea? Let's build it.</span></div>
+        <div class="t-line"><span class="t-prompt">$</span><span class="cursor-blink"></span></div>
+        <div class="contact-btns">
+          <a href="mailto:Bharathsai432@gmail.com" class="btn-8 btn-start">▶ SEND MESSAGE</a>
+          <a href="https://www.linkedin.com/in/kalyansaib/" target="_blank" class="btn-8 btn-p2">LINKEDIN</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">BHARATH KALYAN</div>
+  <div class="footer-copy">© 2024 <span>BK.EXE</span> — ALL RIGHTS RESERVED</div>
+  <div class="lives"></div>
+</footer>
+
+<script>
+// ── FADE IN OBSERVER ──
+const io = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+
+// ── HERO BARS ──
+const heroObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.bar-fill').forEach(b => {
+        b.style.width = b.dataset.w + '%';
+      });
+      heroObs.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+const heroStat = document.querySelector('.stat-bars');
+if (heroStat) heroObs.observe(heroStat);
+
+// ── PIXEL SKILL BARS ──
+document.querySelectorAll('.pixel-bar-track').forEach(track => {
+  const segs = parseInt(track.dataset.segs);
+  const color = track.dataset.color;
+  const fill = document.createElement('div');
+  fill.className = 'pixel-bar-fill';
+  fill.style.width = '0%';
+  for (let i = 0; i < segs; i++) {
+    const s = document.createElement('div');
+    s.className = `pixel-seg ${color}`;
+    fill.appendChild(s);
+  }
+  track.appendChild(fill);
+
+  const obs2 = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        setTimeout(() => {
+          fill.style.width = (segs / 10 * 100) + '%';
+        }, 200);
+        obs2.unobserve(track);
+      }
+    });
+  }, { threshold: 0.5 });
+  obs2.observe(track);
+});
+
+// ── KONAMI CODE EASTER EGG ──
+const konami = [38,38,40,40,37,39,37,39,66,65];
+let ki = 0;
+document.addEventListener('keydown', e => {
+  if (e.keyCode === konami[ki]) { ki++; } else { ki = 0; }
+  if (ki === konami.length) {
+    ki = 0;
+    document.body.style.animation = 'none';
+    document.body.style.filter = 'hue-rotate(180deg)';
+    setTimeout(() => { document.body.style.filter = ''; }, 2000);
+    const msg = document.createElement('div');
+    msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#ffe600;color:#000;font-family:"Press Start 2P",monospace;font-size:14px;padding:2rem;z-index:99999;border:4px solid #000;box-shadow:6px 6px 0 #333;text-align:center;line-height:2';
+    msg.innerHTML = '★ CHEAT CODE ACTIVATED ★<br><br>+99 CREATIVITY<br>+99 GAME DESIGN';
+    document.body.appendChild(msg);
+    setTimeout(() => msg.remove(), 2500);
+  }
+});
+
+// ── NAV ACTIVE ──
+const secs = document.querySelectorAll('section[id]');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  secs.forEach(s => { if (window.scrollY >= s.offsetTop - 100) cur = s.id; });
+  document.querySelectorAll('nav ul li a').forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + cur ? 'var(--yellow)' : '';
+  });
+});
+</script>
 </body>
+</html>
